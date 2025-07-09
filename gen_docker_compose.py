@@ -1,12 +1,15 @@
 #!/usr/bin/env python
-
+import os
 import re
 from pathlib import Path
 
 import yaml
 
-DOCKER_COMPOSE_PATH = Path(__file__).parent.parent / "docker-compose.yml"
+DOCKER_COMPOSE_PATH = Path("docker-compose.yml")
 
+def get_project_name() -> str:
+    # We are ensuring run from project root in main() func, so it is safe to assume that we are in project root
+    return Path(os.getcwd()).name
 
 def get_worker_name(path: Path) -> str:
     # Извлекаем имя рабочего файла без расширения, заменяя "_" на "-"
@@ -17,6 +20,9 @@ def get_worker_name(path: Path) -> str:
 def get_service_name(path: Path) -> str:
     # Получаем имя родительской папки и имя рабочего файла
     parent_name = path.parent.parent.parent.name
+    if parent_name.strip() == "":
+        parent_name = get_project_name()
+    print(parent_name)
     worker_name = get_worker_name(path)
     return f"{parent_name}-{worker_name}"
 
@@ -38,7 +44,7 @@ def generate_service_block(service_name: str, path: Path) -> dict:
 
     # Формируем блок настроек для нового сервиса в Docker Compose
     return {
-        "image": "logis-backend",  # Имя образа Docker
+        "image": get_project_name(),  # Имя образа Docker
         "build": {"context": ".", "dockerfile": "Dockerfile"},  # Параметры сборки
         "container_name": service_name,  # Имя контейнера
         "command": f"bash -c 'PYTHONPATH=/application poetry run python -u {rel_path}'",  # Команда для запуска
