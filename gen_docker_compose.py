@@ -100,7 +100,7 @@ def main():
     added = 0
 
     api_service_name = f"{get_project_name()}-api"
-    if api_service_name not in compose["services"]:
+    if api_service_name not in compose["services"] and os.path.exists("src/api"):
         compose["services"][api_service_name] = generate_service_block(
             service_name=api_service_name,
             path=Path("src/__main__.py"),
