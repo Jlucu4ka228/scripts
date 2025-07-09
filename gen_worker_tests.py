@@ -43,11 +43,11 @@ def main():
         for import_ in root_imports:
             if import_ not in script_content:
                 if import_ == "from src.helper import redis_client":
-                    if not os.path.exists(import_):
-                        import_ = f"from src.helpers import redis_client"
-                if not os.path.exists(import_):
-                    print("Не найден helper(s) файл в директории src, его присутствие необходимо для импорта redis_client. Пожалуйста, добавьте его и перезапустите скрипт")
-                    exit(-1)
+                    if not os.path.exists("src/helper.py"):
+                        print("Не найден helper(s) файл в директории src, его присутствие необходимо для импорта redis_client. ")
+                        print("Пожалуйста, добавьте его и перезапустите скрипт")
+                        exit(-1)
+
                 script_file.write(import_)
 
         for worker_path in workers_to_test:
